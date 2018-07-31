@@ -1,4 +1,4 @@
-<tool id="salmon_index_builder_data_manager" name="Salmon" tool_type="manage_data" version="0.43.1">
+<tool id="salmon_index_builder_data_manager" name="Salmon" tool_type="manage_data" version="0.9.1">
     <description>index builder</description>
     <requirements>
         <requirement type="package" version="0.9.1">salmon</requirement>
