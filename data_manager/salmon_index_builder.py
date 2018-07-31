@@ -30,17 +30,10 @@ def build_salmon_index( data_manager_dict, options, params, sequence_id, sequenc
     target_directory = params[ 'output_data' ][0]['extra_files_path']
     if not os.path.exists( target_directory ):
         os.mkdir( target_directory )
-    fasta_base_name = os.path.split( options.fasta_filename )[-1]
-    fasta_name=fasta_base_name + '.fasta'
-    sym_linked_fasta_filename = os.path.join( target_directory, fasta_name)
-    os.symlink( fasta_filename, sym_linked_fasta_filename )
-    #sym_linked_fasta_filename = os.path.join( target_directory, fasta_base_name )
-    #os.symlink( options.fasta_filename, sym_linked_fasta_filename )
-    args = [ 'salmon', 'index' ]
-    if kmer_size != '':
+    if options.kmer_size != '':
         args.append('-k')
-        args.append(kmer_size)
-    args.extend( [ '-t' , sym_linked_fasta_filename, '-i', target_directory ] )
+        args.append(options.kmer_size)
+    args.extend( [ '-t' , options.fasta_filename, '-i', target_directory ] )
     proc = subprocess.Popen( args=args, shell=False, cwd=target_directory )
     return_code = proc.wait()
     if return_code:
@@ -64,7 +57,8 @@ def main():
     parser.add_argument( '--fasta_filename', dest='fasta_filename', action='store', type=str, default=None )
     parser.add_argument( '--fasta_dbkey', dest='fasta_dbkey', action='store', type=str, default=None )
     parser.add_argument( '--fasta_description', dest='fasta_description', action='store', type=str, default=None )
-    parser.add_argument( '--data_table_name', dest='data_table_name', action='store', type=str, default='kallisto_indexes' )
+    parser.add_argument( '--data_table_name', dest='data_table_name', action='store', type=str, default='salmon_indexes' )
+    parser.add_argument( '-k', '--kmer_size', dest='kmer_size', action='store', type=str, help='kmer_size' )
     options = parser.parse_args()
 
     filename = options.output
@@ -78,7 +72,7 @@ def main():
     sequence_id, sequence_name = get_id_name( params, dbkey=options.fasta_dbkey, fasta_description=options.fasta_description )
 
     # build the index
-    build_kallisto_index( data_manager_dict, options, params, sequence_id, sequence_name )
+    build_salmon_index( data_manager_dict, options, params, sequence_id, sequence_name )
 
     # save info to json file
     open( filename, 'w' ).write( dumps( data_manager_dict ) )
