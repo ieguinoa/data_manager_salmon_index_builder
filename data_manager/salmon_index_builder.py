@@ -30,6 +30,7 @@ def build_salmon_index( data_manager_dict, options, params, sequence_id, sequenc
     target_directory = params[ 'output_data' ][0]['extra_files_path']
     if not os.path.exists( target_directory ):
         os.mkdir( target_directory )
+    args = [ 'salmon', 'index' ]
     if options.kmer_size != '':
         args.append('-k')
         args.append(options.kmer_size)
