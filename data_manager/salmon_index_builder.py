@@ -34,8 +34,8 @@ def build_salmon_index( data_manager_dict, options, params, sequence_id, sequenc
     if options.kmer_size != '':
         args.append('-k')
         args.append(options.kmer_size)
-    args.extend( [ '-t' , options.fasta_filename, '-i', sequence_id ] )
-    proc = subprocess.Popen( args=args, shell=False, cwd=target_directory )
+    args.extend( [ '-t' , options.fasta_filename, '-i', target_directory ] )
+    proc = subprocess.Popen( args=args, shell=False)
     return_code = proc.wait()
     if return_code:
         print("Error building index.", file=sys.stderr)
@@ -71,7 +71,6 @@ def main():
         raise Exception( '"%s" is not a valid dbkey. You must specify a valid dbkey.' % ( options.fasta_dbkey ) )
 
     sequence_id, sequence_name = get_id_name( params, dbkey=options.fasta_dbkey, fasta_description=options.fasta_description )
-
     # build the index
     build_salmon_index( data_manager_dict, options, params, sequence_id, sequence_name )
 
