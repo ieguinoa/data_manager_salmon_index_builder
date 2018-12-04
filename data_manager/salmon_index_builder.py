@@ -30,17 +30,19 @@ def build_salmon_index( data_manager_dict, options, params, sequence_id, sequenc
     target_directory = params[ 'output_data' ][0]['extra_files_path']
     if not os.path.exists( target_directory ):
         os.mkdir( target_directory )
+    path=sequence_id
     args = [ 'salmon', 'index' ]
     if options.kmer_size != '':
         args.append('-k')
         args.append(options.kmer_size)
+        path=path + '_kmer_'+ options.kmer_size   
     args.extend( [ '-t' , options.fasta_filename, '-i', target_directory ] )
     proc = subprocess.Popen( args=args, shell=False)
     return_code = proc.wait()
     if return_code:
         print("Error building index.", file=sys.stderr)
         sys.exit( return_code )
-    data_table_entry = dict( value=sequence_id, dbkey=options.fasta_dbkey, name=sequence_name, path=sequence_id )
+    data_table_entry = dict( value=sequence_id, dbkey=options.fasta_dbkey, name=sequence_name, path=path )
     _add_data_table_entry( data_manager_dict, data_table_name, data_table_entry )
 
 
