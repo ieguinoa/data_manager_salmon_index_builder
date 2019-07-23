@@ -8,7 +8,7 @@ import subprocess
 import sys
 from json import dumps, loads
 
-DEFAULT_DATA_TABLE_NAME = "salmon_indexes"
+DEFAULT_DATA_TABLE_NAME = "salmon_indexes_versioned"
 
 
 def get_id_name( params, dbkey, fasta_description=None):
@@ -30,19 +30,17 @@ def build_salmon_index( data_manager_dict, options, params, sequence_id, sequenc
     target_directory = params[ 'output_data' ][0]['extra_files_path']
     if not os.path.exists( target_directory ):
         os.mkdir( target_directory )
-    path=sequence_id
     args = [ 'salmon', 'index' ]
     if options.kmer_size != '':
         args.append('-k')
         args.append(options.kmer_size)
-        path=path + '_kmer_'+ options.kmer_size   
-    args.extend( [ '-t' , options.fasta_filename, '-i', target_directory ] )
+    args.extend( [ '-t', options.fasta_filename, '-i', target_directory ] )
     proc = subprocess.Popen( args=args, shell=False)
     return_code = proc.wait()
     if return_code:
         print("Error building index.", file=sys.stderr)
         sys.exit( return_code )
-    data_table_entry = dict( value=sequence_id, dbkey=options.fasta_dbkey, name=sequence_name, path=path )
+    data_table_entry = dict( value=sequence_id, dbkey=options.fasta_dbkey, name=sequence_name, path=sequence_id, version=options.index_version )
     _add_data_table_entry( data_manager_dict, data_table_name, data_table_entry )
 
 
@@ -61,6 +59,7 @@ def main():
     parser.add_argument( '--fasta_dbkey', dest='fasta_dbkey', action='store', type=str, default=None )
     parser.add_argument( '--fasta_description', dest='fasta_description', action='store', type=str, default=None )
     parser.add_argument( '--data_table_name', dest='data_table_name', action='store', type=str, default='salmon_indexes' )
+    parser.add_argument( '-v','--index_version', dest='index_version', action='store', type=str, help='Use IndexVersion attribute from header.json' )
     parser.add_argument( '-k', '--kmer_size', dest='kmer_size', action='store', type=str, help='kmer_size' )
     options = parser.parse_args()
 
